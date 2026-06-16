@@ -1,0 +1,30 @@
+Assim que chegar em casa colocar esse prompt no antigravity ide 
+Você é um Engenheiro de Software Sênior e Especialista em UI/UX. Precisamos refatorar o projeto do SAE (Sistema Administrativo Escolar) gerado anteriormente. Aplique as seguintes correções, melhorias e regras de negócio estritas:
+
+### 1. 🌐 TRADUÇÃO COMPLETA E HUMANIZAÇÃO DA UI
+- Altere todo o projeto (textos das Views, labels de formulários, placeholders, mensagens de feedback, títulos e menus) de inglês para Português (Brasil).
+- Humanize os textos da interface. Remova termos técnicos frios como "MVP", "CRUD" ou "Acessar Sistema Administrativo Escolar".
+  - Exemplo na Tela de Login: Em vez de "SAE - Sistema MVP", use títulos acolhedores e profissionais como "SAE — Gestão Escolar Inteligente", "Bem-vindo de volta! Faça login para gerenciar a sua escola", "Esqueceu a sua senha?", "Entrar no Painel".
+  - Nas mensagens de sucesso: Em vez de "User deleted successfully", use "Sucesso! O usuário foi removido com segurança."
+
+### 2. 📅 ALTERAÇÃO DE REGRA DE NEGÓCIO: TURNOS DAS TURMAS
+- No campo 'periodo' (ou 'turno') do CRUD de Turmas, os únicos 4 valores aceitos agora devem ser:
+  * Manhã
+  * Tarde
+  * Noite
+  * Integral
+- Atualize as migrations, validações dos Form Requests, seeders e os campos de seleção (`<select>`) nas views de criação e edição para refletirem exatamente estas 4 opções em português.
+
+### 3. 🛠️ COMPORTAMENTO DO FRONT-END: APENAS TAILWIND (SEM INTERVENÇÃO DE JS)
+- Remova completamente os scripts customizados de JavaScript que controlavam as animações e interações.
+- Para manter o sistema dinâmico, elegante e funcional SEM Javascript, utilize os recursos nativos do Tailwind CSS combinados com HTML puro:
+  - Para a listagem expansível de Alunos dentro de Turmas, utilize a tag nativa do HTML `<details>` e `<summary>`, estilizada elegantemente com classes Tailwind (ex: `cursor-pointer`, `transition-all`, `duration-300`).
+  - Para efeitos visuais de feedback e menus, use as classes utilitárias de transição nativas do Tailwind (`transition-all duration-200 ease-in-out`) puras nos estados de `:hover`, `:focus` e `:active`.
+
+### 4. 🪲 CORREÇÃO DE BUG: MODAL E BOTÃO DE DELETAR (DELETE)
+- O botão de exclusão (Delete) está com comportamento quebrado. Corrija a estrutura do formulário de deleção no Laravel.
+- Como removemos o Javascript, substitua os modais complexos de JS por uma abordagem limpa, segura e funcional em HTML/Tailwind:
+  - Opção A: Crie uma View/Página dedicada de Confirmação de Exclusão ("Deseja mesmo excluir o aluno X? Esta ação não pode ser desfeita.") estilizada como um card de alerta elegante (vermelho suave / amber).
+  - Opção B: Use o atributo nativo `onsubmit="return confirm('Tem certeza que deseja excluir este registro?');"` diretamente na tag `<form>` do botão de deletar do Laravel. É simples, blindado contra bugs e funciona 100% sem scripts externos. Ensure o método `@method('DELETE')` e a diretiva `@csrf` estejam perfeitamente declarados dentro do form.
+
+Reescreva os arquivos afetados (especialmente as Views Blade, as rotas se necessário, e os Controllers/Requests com as novas validações e mensagens em português) garantindo que tudo funcione perfeitamente ao ser copiado.
