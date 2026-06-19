@@ -6,159 +6,100 @@
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h2 class="text-xl font-bold text-slate-800">Turmas Escolares</h2>
-        <p class="text-xs text-slate-400 mt-1">Visualize e gerencie as turmas e veja os alunos matriculados em cada uma.</p>
+        <p class="text-xs text-slate-400 mt-1">Gerencie os turnos e visualize a lista de alunos matriculados de forma simples e direta.</p>
     </div>
-    @if(in_array(auth()->user()->role, ['owner', 'admin']))
     <div>
         <a href="{{ route('turmas.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/10 active:scale-[0.98] transition-all duration-200">
             <i class="bx bx-plus text-lg"></i>
             Nova Turma
         </a>
     </div>
-    @endif
 </div>
 
-<!-- Turmas Table Card -->
-<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 border-b border-slate-100">
-                    <th class="w-12 px-6 py-4"></th>
-                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Nome da Turma</th>
-                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Período</th>
-                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Ano Letivo</th>
-                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Alunos Matriculados</th>
-                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right font-medium">Ações</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($turmas as $turma)
-                <!-- Main Row -->
-                <tr class="hover:bg-slate-50/30 transition-colors">
-                    <!-- Expand/Collapse Button Column -->
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="toggleStudents({{ $turma->id }})" class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-all duration-200" title="Ver Alunos">
-                            <i id="icon-{{ $turma->id }}" class="bx bx-chevron-down text-xl align-middle"></i>
-                        </button>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">
-                                {{ strtoupper(substr($turma->nome_turma, 0, 2)) }}
-                            </div>
-                            <span class="text-sm font-semibold text-slate-700">{{ $turma->nome_turma }}</span>
+<!-- Grid de Cards de Turmas -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    @forelse($turmas as $turma)
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col justify-between hover-lift relative overflow-hidden">
+        <div>
+            <!-- Cabeçalho do Card -->
+            <div class="flex items-start justify-between gap-2 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-base shadow-sm">
+                        {{ strtoupper(substr($turma->nome_turma, 0, 2)) }}
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">{{ $turma->nome_turma }}</h3>
+                        <span class="text-[10px] text-slate-400">Ano Letivo: {{ $turma->ano }}</span>
+                    </div>
+                </div>
+                
+                <!-- Badge de Período -->
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                    @if($turma->periodo === 'Manhã') bg-sky-50 text-sky-700 border border-sky-100
+                    @elseif($turma->periodo === 'Tarde') bg-amber-50 text-amber-700 border border-amber-100
+                    @elseif($turma->periodo === 'Noite') bg-purple-50 text-purple-700 border border-purple-100
+                    @else bg-emerald-50 text-emerald-700 border border-emerald-100
+                    @endif">
+                    {{ $turma->periodo }}
+                </span>
+            </div>
+
+            <!-- Listagem Expansível de Alunos (Apenas HTML/Tailwind) -->
+            <details class="group mt-4 border-t border-slate-100 pt-4">
+                <summary class="flex items-center justify-between w-full text-xs font-semibold text-slate-500 hover:text-indigo-600 cursor-pointer list-none select-none outline-none transition-all duration-200">
+                    <span class="flex items-center gap-2">
+                        <i class="bx bx-group text-base text-slate-400 group-open:text-indigo-500"></i>
+                        <span>Alunos Matriculados ({{ $turma->students->count() }})</span>
+                    </span>
+                    <i class="bx bx-chevron-down text-lg transition-transform duration-300 group-open:rotate-180"></i>
+                </summary>
+                
+                <div class="mt-3 space-y-2 max-h-60 overflow-y-auto pr-1">
+                    @forelse($turma->students as $student)
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100/50 transition-colors">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-700">{{ $student->nome }}</p>
+                            <p class="text-[10px] font-mono text-slate-400">Matrícula: {{ $student->matricula }}</p>
                         </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $turma->periodo === 'Matutino' ? 'bg-sky-50 text-sky-700 border border-sky-100' : 'bg-amber-50 text-amber-700 border border-amber-100' }}">
-                            {{ $turma->periodo }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-slate-600">{{ $turma->ano }}</td>
-                    <td class="px-6 py-4 text-sm text-slate-500">
-                        <span class="font-bold text-slate-700">{{ $turma->students->count() }}</span> alunos
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <div class="inline-flex items-center gap-2">
-                            <!-- Toggle View Alunos -->
-                            <button onclick="toggleStudents({{ $turma->id }})" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors flex items-center gap-1">
-                                <i class="bx bx-group text-sm"></i> Alunos
-                            </button>
+                        <span class="text-[10px] text-slate-400">Nasc: {{ $student->data_nascimento->format('d/m/Y') }}</span>
+                    </div>
+                    @empty
+                    <p class="text-xs text-slate-400 italic py-2 text-center">Nenhum aluno matriculado nesta turma.</p>
+                    @endforelse
+                </div>
+            </details>
+        </div>
 
-                            @if(in_array(auth()->user()->role, ['owner', 'admin']))
-                            <!-- Edit -->
-                            <a href="{{ route('turmas.edit', $turma->id) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200" title="Editar Turma">
-                                <i class="bx bx-edit-alt text-lg"></i>
-                            </a>
+        <!-- Rodapé do Card com Ações -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+            <!-- Editar -->
+            <a href="{{ route('turmas.edit', $turma->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" title="Editar Turma">
+                <i class="bx bx-edit-alt text-sm"></i>
+                Editar
+            </a>
 
-                            <!-- Delete -->
-                            <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Ao excluir esta turma, todos os alunos vinculados a ela também serão excluídos. Deseja prosseguir?');" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all duration-200" title="Excluir Turma">
-                                    <i class="bx bx-trash text-lg"></i>
-                                </button>
-                            </form>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-
-                <!-- Collapsible Row for Students -->
-                <tr id="students-row-{{ $turma->id }}" class="hidden bg-slate-50/50">
-                    <td colspan="6" class="px-10 py-6 border-t border-b border-slate-100 shadow-inner">
-                        <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-sm max-w-4xl">
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5">
-                                <i class="bx bx-group text-emerald-500 text-base"></i>
-                                Alunos da Turma: <span class="text-slate-700 font-bold ml-1">{{ $turma->nome_turma }}</span>
-                            </h4>
-
-                            @if($turma->students->count() > 0)
-                            <div class="overflow-hidden rounded-lg border border-slate-100">
-                                <table class="w-full text-left text-xs border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-100">
-                                            <th class="px-4 py-3 font-semibold text-slate-400">Nome do Aluno</th>
-                                            <th class="px-4 py-3 font-semibold text-slate-400">Matrícula</th>
-                                            <th class="px-4 py-3 font-semibold text-slate-400">Data de Nascimento</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-50">
-                                        @foreach($turma->students as $student)
-                                        <tr>
-                                            <td class="px-4 py-3 font-semibold text-slate-700">{{ $student->nome }}</td>
-                                            <td class="px-4 py-3 text-slate-600 font-mono">{{ $student->matricula }}</td>
-                                            <td class="px-4 py-3 text-slate-500">{{ $student->data_nascimento->format('d/m/Y') }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @else
-                            <div class="flex items-center gap-2 p-4 rounded-lg bg-slate-50 border border-slate-100 text-slate-400 text-sm">
-                                <i class="bx bx-info-circle text-lg text-slate-400"></i>
-                                <span>Nenhum aluno matriculado nesta turma até o momento.</span>
-                            </div>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-sm text-slate-400">
-                        Nenhuma turma cadastrada.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+            <!-- Excluir -->
+            <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Ao excluir esta turma, todos os alunos vinculados a ela também serão excluídos permanentemente do sistema. Deseja prosseguir com a exclusão?');" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors" title="Excluir Turma">
+                    <i class="bx bx-trash text-sm"></i>
+                    Excluir
+                </button>
+            </form>
+        </div>
     </div>
-    @if($turmas->hasPages())
-    <div class="px-6 py-4 border-t border-slate-100">
-        {{ $turmas->links() }}
+    @empty
+    <div class="col-span-full bg-white rounded-2xl border border-slate-100 p-8 text-center text-sm text-slate-400">
+        Nenhuma turma cadastrada no sistema.
     </div>
-    @endif
+    @endforelse
 </div>
-@endsection
 
-@section('scripts')
-<script>
-    function toggleStudents(turmaId) {
-        const row = document.getElementById('students-row-' + turmaId);
-        const icon = document.getElementById('icon-' + turmaId);
-        
-        if (row.classList.contains('hidden')) {
-            // Expand with smooth collapse transition if possible
-            row.classList.remove('hidden');
-            icon.classList.remove('bx-chevron-down');
-            icon.classList.add('bx-chevron-up');
-        } else {
-            // Collapse
-            row.classList.add('hidden');
-            icon.classList.remove('bx-chevron-up');
-            icon.classList.add('bx-chevron-down');
-        }
-    }
-</script>
+@if($turmas->hasPages())
+<div class="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+    {{ $turmas->links() }}
+</div>
+@endif
+
 @endsection

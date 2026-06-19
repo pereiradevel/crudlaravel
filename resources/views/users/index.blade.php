@@ -50,19 +50,13 @@
                                 <i class="bx bx-edit-alt text-lg"></i>
                             </a>
 
-                            @if(auth()->id() !== $user->id)
-                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este usuário permanentemente?');" class="inline">
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Deseja mesmo remover a conta deste usuário? Esta ação impedirá permanentemente o acesso dele ao sistema.');" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all duration-200" title="Excluir Usuário">
                                     <i class="bx bx-trash text-lg"></i>
                                 </button>
                             </form>
-                            @else
-                            <span class="p-1.5 text-slate-300 cursor-not-allowed" title="Você não pode excluir sua própria conta">
-                                <i class="bx bx-lock-alt text-lg"></i>
-                            </span>
-                            @endif
                         </div>
                     </td>
                 </tr>

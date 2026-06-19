@@ -87,11 +87,6 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (auth()->id() === $user->id) {
-            return redirect()->route('users.index')
-                ->with('error', 'Por motivos de segurança, você não pode remover a sua própria conta.');
-        }
-
         $user->delete();
 
         return redirect()->route('users.index')

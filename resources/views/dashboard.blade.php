@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $currentUser = auth()->user();
+@endphp
 <div class="mb-8 p-6 bg-gradient-to-r from-navy-500 to-indigo-950 rounded-2xl text-white shadow-md shadow-navy-100 relative overflow-hidden">
     <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-emerald-500/10 blur-2xl"></div>
     <div class="relative z-10">
-        <h2 class="text-2xl font-bold">Olá, {{ auth()->user()->name }}!</h2>
+        <h2 class="text-2xl font-bold">Olá, {{ $currentUser ? $currentUser->name : 'visitante' }}!</h2>
         <p class="text-sm text-slate-300 mt-1.5">Acompanhe as principais informações da sua instituição de ensino de forma simples e rápida.</p>
     </div>
 </div>
@@ -50,7 +53,6 @@
         </div>
     </a>
 
-    @if(auth()->user()->role === 'owner')
     <a href="{{ route('users.index') }}" class="block hover-lift bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group">
         <div>
             <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Contas de Usuários</span>
@@ -63,20 +65,6 @@
             <i class="bx bxs-user-account"></i>
         </div>
     </a>
-    @else
-    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-        <div>
-            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Contas de Usuários</span>
-            <span class="block text-3xl font-bold text-slate-800 mt-2">{{ $users_count }}</span>
-            <span class="inline-flex items-center text-xs text-slate-400 font-medium mt-3">
-                Acesso Restrito ao Gestor
-            </span>
-        </div>
-        <div class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center text-3xl">
-            <i class="bx bxs-lock-alt"></i>
-        </div>
-    </div>
-    @endif
 
 </div>
 
@@ -88,7 +76,6 @@
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
-            @if(in_array(auth()->user()->role, ['owner', 'admin']))
             <a href="{{ route('students.create') }}" class="p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors flex items-center gap-3">
                 <span class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                     <i class="bx bx-user-plus"></i>
@@ -118,9 +105,7 @@
                     <span class="text-[11px] text-slate-400">Cadastrar professores ou coordenadores</span>
                 </div>
             </a>
-            @endif
 
-            @if(auth()->user()->role === 'owner')
             <a href="{{ route('users.create') }}" class="p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors flex items-center gap-3">
                 <span class="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
                     <i class="bx bx-shield-plus"></i>
@@ -130,17 +115,6 @@
                     <span class="text-[11px] text-slate-400">Liberar acesso administrativo para outra pessoa</span>
                 </div>
             </a>
-            @else
-            <div class="p-4 rounded-xl border border-dashed border-slate-200 opacity-60 flex items-center gap-3">
-                <span class="w-9 h-9 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center text-lg">
-                    <i class="bx bx-lock"></i>
-                </span>
-                <div>
-                    <span class="block text-sm font-semibold text-slate-400">Funções Administrativas</span>
-                    <span class="text-[11px] text-slate-400">Função restrita aos proprietários</span>
-                </div>
-            </div>
-            @endif
 
         </div>
     </div>
@@ -153,16 +127,16 @@
         <div class="space-y-4">
             <div class="flex items-center justify-between py-2 border-b border-slate-50">
                 <span class="text-xs text-slate-400 font-medium">Nome</span>
-                <span class="text-sm font-semibold text-slate-700">{{ auth()->user()->name }}</span>
+                <span class="text-sm font-semibold text-slate-700">{{ $currentUser ? $currentUser->name : 'Visitante' }}</span>
             </div>
             <div class="flex items-center justify-between py-2 border-b border-slate-50">
                 <span class="text-xs text-slate-400 font-medium">E-mail</span>
-                <span class="text-sm font-medium text-slate-700">{{ auth()->user()->email }}</span>
+                <span class="text-sm font-medium text-slate-700">{{ $currentUser ? $currentUser->email : 'Não autenticado' }}</span>
             </div>
             <div class="flex items-center justify-between py-2 border-b border-slate-50">
                 <span class="text-xs text-slate-400 font-medium">Nível de Acesso</span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider {{ auth()->user()->role === 'owner' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : (auth()->user()->role === 'admin' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-600') }}">
-                    {{ auth()->user()->role === 'owner' ? 'Dono' : (auth()->user()->role === 'admin' ? 'Admin' : 'Comum') }}
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider {{ $currentUser ? ($currentUser->role === 'owner' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : ($currentUser->role === 'admin' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-600')) : 'bg-slate-100 text-slate-600' }}">
+                    {{ $currentUser ? ($currentUser->role === 'owner' ? 'Dono' : ($currentUser->role === 'admin' ? 'Admin' : 'Comum')) : 'Público' }}
                 </span>
             </div>
             <div class="flex items-center justify-between py-2">
@@ -171,5 +145,10 @@
             </div>
         </div>
     </div>
+
+<div class="mt-8 rounded-2xl border border-slate-100 bg-slate-50 p-6 text-slate-700 shadow-sm">
+    <p class="text-base font-semibold">Olá, {{ $currentUser->name }}!</p>
+    <p class="text-sm text-slate-500 mt-1">Você está logado e pode acessar o painel completo.</p>
+</div>
 </div>
 @endsection

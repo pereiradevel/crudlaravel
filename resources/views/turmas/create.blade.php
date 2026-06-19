@@ -35,8 +35,10 @@
                 <select name="periodo" id="periodo" required
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 transition-all text-sm @error('periodo') border-rose-400 focus:ring-rose-400/20 @enderror">
                     <option value="" disabled selected>Selecione um período</option>
-                    <option value="Matutino" {{ old('periodo') === 'Matutino' ? 'selected' : '' }}>Matutino (Manhã)</option>
-                    <option value="Vespertino" {{ old('periodo') === 'Vespertino' ? 'selected' : '' }}>Vespertino (Tarde)</option>
+                    <option value="Manhã" {{ old('periodo') === 'Manhã' ? 'selected' : '' }}>Manhã</option>
+                    <option value="Tarde" {{ old('periodo') === 'Tarde' ? 'selected' : '' }}>Tarde</option>
+                    <option value="Noite" {{ old('periodo') === 'Noite' ? 'selected' : '' }}>Noite</option>
+                    <option value="Integral" {{ old('periodo') === 'Integral' ? 'selected' : '' }}>Integral</option>
                 </select>
                 @error('periodo')
                 <p class="text-xs text-rose-500 mt-1.5 flex items-center gap-1"><i class="bx bxs-error-circle"></i> {{ $message }}</p>

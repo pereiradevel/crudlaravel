@@ -8,14 +8,12 @@
         <h2 class="text-xl font-bold text-slate-800">Funcionários Cadastrados</h2>
         <p class="text-xs text-slate-400 mt-1">Veja e gerencie a equipe de professores, diretores e coordenadores escolares.</p>
     </div>
-    @if(in_array(auth()->user()->role, ['owner', 'admin']))
     <div>
         <a href="{{ route('staff.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/10 active:scale-[0.98] transition-all duration-200">
             <i class="bx bx-plus text-lg"></i>
             Novo Funcionário
         </a>
     </div>
-    @endif
 </div>
 
 <!-- Staff Table Card -->
@@ -28,9 +26,7 @@
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Cargo</th>
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">E-mail</th>
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Telefone</th>
-                    @if(in_array(auth()->user()->role, ['owner', 'admin']))
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right">Ações</th>
-                    @endif
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -51,7 +47,6 @@
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-600">{{ $member->email }}</td>
                     <td class="px-6 py-4 text-sm text-slate-500">{{ $member->telefone ?? 'Não informado' }}</td>
-                    @if(in_array(auth()->user()->role, ['owner', 'admin']))
                     <td class="px-6 py-4 text-right">
                         <div class="inline-flex items-center gap-2">
                             <!-- Edit Button -->
@@ -60,7 +55,7 @@
                             </a>
 
                             <!-- Delete Form (with confirmation) -->
-                            <form action="{{ route('staff.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este funcionário permanentemente?');" class="inline">
+                            <form action="{{ route('staff.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover o registro deste funcionário? As informações e o histórico profissional dele serão desvinculadas do sistema.');" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all duration-200" title="Excluir Funcionário">
@@ -69,11 +64,10 @@
                             </form>
                         </div>
                     </td>
-                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="{{ in_array(auth()->user()->role, ['owner', 'admin']) ? 5 : 4 }}" class="px-6 py-8 text-center text-sm text-slate-400">
+                    <td colspan="5" class="px-6 py-8 text-center text-sm text-slate-400">
                         Nenhum funcionário cadastrado.
                     </td>
                 </tr>

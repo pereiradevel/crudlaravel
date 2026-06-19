@@ -28,6 +28,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
+            'name' => 'Administrador',
+            'email' => 'adm@sae.com',
+            'password' => Hash::make('23112009'),
+            'role' => 'admin',
+        ]);
+
+        User::create([
             'name' => 'Usuário Comum',
             'email' => 'user@sae.com',
             'password' => Hash::make('senha123'),
@@ -69,7 +76,13 @@ class DatabaseSeeder extends Seeder
 
         $turma3 = Turma::create([
             'nome_turma' => '3º Ano C',
-            'periodo' => 'Manhã',
+            'periodo' => 'Noite',
+            'ano' => 2026,
+        ]);
+
+        $turma4 = Turma::create([
+            'nome_turma' => '4º Ano D',
+            'periodo' => 'Integral',
             'ano' => 2026,
         ]);
 
@@ -99,6 +112,13 @@ class DatabaseSeeder extends Seeder
             'matricula' => 'ALU2026004',
             'turma_id' => $turma3->id,
             'data_nascimento' => '2013-11-30',
+        ]);
+
+        Student::create([
+            'nome' => 'Lucas Alencar',
+            'matricula' => 'ALU2026005',
+            'turma_id' => $turma4->id,
+            'data_nascimento' => '2012-07-19',
         ]);
     }
 }

@@ -13,6 +13,7 @@ class LoginController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
+
         return view('auth.login');
     }
 
@@ -31,7 +32,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'))
-                ->with('success', 'Que bom ver você novamente, ' . Auth::user()->name . '!');
+                ->with('success', 'Bem-vindo de volta, ' . Auth::user()->name . '!');
         }
 
         throw ValidationException::withMessages([
@@ -47,6 +48,6 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')
-            ->with('info', 'Sua sessão foi encerrada com sucesso.');
+            ->with('success', 'Você saiu com sucesso.');
     }
 }

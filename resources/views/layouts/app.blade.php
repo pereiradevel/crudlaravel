@@ -77,6 +77,7 @@
 </head>
 <body class="h-full text-slate-800 antialiased flex">
 
+    @auth
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-navy-900 text-white shadow-xl">
         <div class="flex items-center justify-between h-20 px-6 border-b border-navy-800">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 font-semibold text-lg tracking-wider">
@@ -93,12 +94,10 @@
                 <span class="font-medium text-sm">Painel Principal</span>
             </a>
 
-            @if(auth()->user()->role === 'owner')
             <a href="{{ route('users.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-300 hover:bg-navy-800 hover:text-white' }}">
                 <i class="bx bxs-user-account text-xl"></i>
                 <span class="font-medium text-sm">Controle de Usuários</span>
             </a>
-            @endif
 
             <a href="{{ route('staff.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('staff.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-300 hover:bg-navy-800 hover:text-white' }}">
                 <i class="bx bxs-briefcase text-xl"></i>
@@ -116,30 +115,14 @@
             </a>
         </nav>
 
-        <div class="p-4 border-t border-navy-800 bg-navy-950/40">
-            <div class="flex items-center gap-3 px-3 py-2">
-                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-navy-800 text-indigo-400 font-bold border border-navy-700">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                </div>
-                <div class="flex-1 overflow-hidden">
-                    <p class="text-sm font-semibold truncate">{{ auth()->user()->name }}</p>
-                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-navy-800 text-indigo-300 inline-block border border-navy-700">
-                        {{ auth()->user()->role === 'owner' ? 'Gestor Dono' : (auth()->user()->role === 'admin' ? 'Administrador' : 'Leitor Comum') }}
-                    </span>
-                </div>
-            </div>
-            
-            <form action="{{ route('logout') }}" method="POST" class="mt-4">
-                @csrf
-                <button type="submit" class="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-medium text-rose-400 hover:text-white hover:bg-rose-500 rounded-xl transition-all duration-200">
-                    <i class="bx bx-log-out text-lg"></i>
-                    <span>Sair do Sistema</span>
-                </button>
-            </form>
+        <div class="p-4 border-t border-navy-800 bg-navy-950/40 text-slate-300 text-sm">
+            <h3 class="font-semibold text-slate-100 mb-2">SAE Escolar</h3>
+            <p class="leading-6">Organize alunos, turmas, funcionários e usuários com um painel simples e direto.</p>
         </div>
     </aside>
+    @endauth
 
-    <div id="main-content" class="flex-1 flex flex-col min-h-screen ml-64 transition-all duration-300">
+    <div id="main-content" class="flex-1 flex flex-col min-h-screen transition-all duration-300 {{ auth()->check() ? 'ml-64' : 'ml-0' }}">
         <header class="flex items-center justify-between h-20 px-8 bg-white border-b border-slate-100 shadow-sm shadow-slate-100/40">
             <div class="flex items-center gap-4">
                 <h1 class="text-xl font-bold text-slate-800">@yield('page_title', 'Painel')</h1>
@@ -154,6 +137,16 @@
                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                     Conexão Segura
                 </span>
+                @guest
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 transition">Entrar</a>
+                <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-100 transition">Registrar</a>
+                @endguest
+                @auth
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500 text-white text-sm font-semibold hover:bg-rose-400 transition">Sair</button>
+                </form>
+                @endauth
             </div>
         </header>
 

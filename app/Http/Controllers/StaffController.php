@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Staff;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -25,19 +24,19 @@ class StaffController extends Controller
             'nome' => ['required', 'string', 'max:255'],
             'cargo' => ['required', 'string', 'max:255'],
             'telefone' => ['nullable', 'string', 'max:50'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:staff,email'],
+            'email' => ['required', 'email', 'max:255', 'unique:staff,email'],
         ], [
             'nome.required' => 'O nome do funcionário é obrigatório.',
-            'cargo.required' => 'O cargo ou função é obrigatório.',
-            'email.required' => 'O endereço de e-mail é obrigatório.',
-            'email.email' => 'Por favor, informe um endereço de e-mail válido.',
-            'email.unique' => 'Este e-mail já está associado a outro funcionário.',
+            'cargo.required' => 'O cargo do funcionário é obrigatório.',
+            'email.required' => 'O e-mail do funcionário é obrigatório.',
+            'email.email' => 'Por favor, informe um e-mail válido.',
+            'email.unique' => 'Este e-mail já está cadastrado para outro funcionário.',
         ]);
 
         Staff::create($data);
 
         return redirect()->route('staff.index')
-            ->with('success', 'Sucesso! O funcionário foi cadastrado com segurança.');
+            ->with('success', 'Sucesso! O funcionário foi cadastrado com sucesso.');
     }
 
     public function edit(Staff $staff)
@@ -51,19 +50,19 @@ class StaffController extends Controller
             'nome' => ['required', 'string', 'max:255'],
             'cargo' => ['required', 'string', 'max:255'],
             'telefone' => ['nullable', 'string', 'max:50'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('staff', 'email')->ignore($staff->id)],
+            'email' => ['required', 'email', 'max:255', 'unique:staff,email,' . $staff->id],
         ], [
             'nome.required' => 'O nome do funcionário é obrigatório.',
-            'cargo.required' => 'O cargo ou função é obrigatório.',
-            'email.required' => 'O endereço de e-mail é obrigatório.',
-            'email.email' => 'Por favor, informe um endereço de e-mail válido.',
-            'email.unique' => 'Este e-mail já está associado a outro funcionário.',
+            'cargo.required' => 'O cargo do funcionário é obrigatório.',
+            'email.required' => 'O e-mail do funcionário é obrigatório.',
+            'email.email' => 'Por favor, informe um e-mail válido.',
+            'email.unique' => 'Este e-mail já está cadastrado para outro funcionário.',
         ]);
 
         $staff->update($data);
 
         return redirect()->route('staff.index')
-            ->with('success', 'Sucesso! As informações do funcionário foram atualizadas.');
+            ->with('success', 'Sucesso! Os dados do funcionário foram atualizados.');
     }
 
     public function destroy(Staff $staff)
@@ -71,6 +70,6 @@ class StaffController extends Controller
         $staff->delete();
 
         return redirect()->route('staff.index')
-            ->with('success', 'Sucesso! O registro do funcionário foi removido do sistema.');
+            ->with('success', 'Sucesso! O funcionário foi removido do sistema.');
     }
 }

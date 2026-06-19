@@ -8,14 +8,12 @@
         <h2 class="text-xl font-bold text-slate-800">Alunos Matriculados</h2>
         <p class="text-xs text-slate-400 mt-1">Veja todos os alunos cadastrados no sistema e suas respectivas turmas.</p>
     </div>
-    @if(in_array(auth()->user()->role, ['owner', 'admin']))
     <div>
         <a href="{{ route('students.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/10 active:scale-[0.98] transition-all duration-200">
             <i class="bx bx-plus text-lg"></i>
             Novo Aluno
         </a>
     </div>
-    @endif
 </div>
 
 <!-- Students Table Card -->
@@ -29,9 +27,7 @@
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Turma</th>
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Período</th>
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Data de Nascimento</th>
-                    @if(in_array(auth()->user()->role, ['owner', 'admin']))
                     <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400 text-right">Ações</th>
-                    @endif
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -53,15 +49,19 @@
                     </td>
                     <td class="px-6 py-4">
                         @if($student->turma)
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $student->turma->periodo === 'Matutino' ? 'bg-sky-50 text-sky-700 border border-sky-100' : 'bg-amber-50 text-amber-700 border border-amber-100' }}">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                            @if($student->turma->periodo === 'Manhã') bg-sky-50 text-sky-700 border border-sky-100
+                            @elseif($student->turma->periodo === 'Tarde') bg-amber-50 text-amber-700 border border-amber-100
+                            @elseif($student->turma->periodo === 'Noite') bg-purple-50 text-purple-700 border border-purple-100
+                            @else bg-emerald-50 text-emerald-700 border border-emerald-100
+                            @endif">
                             {{ $student->turma->periodo }}
                         </span>
                         @else
-                        -
+                        <span class="text-xs text-slate-400">Não Vinculado</span>
                         @endif
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-500">{{ $student->data_nascimento->format('d/m/Y') }}</td>
-                    @if(in_array(auth()->user()->role, ['owner', 'admin']))
                     <td class="px-6 py-4 text-right">
                         <div class="inline-flex items-center gap-2">
                             <!-- Edit Button -->
@@ -70,7 +70,7 @@
                             </a>
 
                             <!-- Delete Form (with confirmation) -->
-                            <form action="{{ route('students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este aluno permanentemente?');" class="inline">
+                            <form action="{{ route('students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('Você confirma a remoção permanente deste aluno do sistema? Esta ação não pode ser desfeita.');" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all duration-200" title="Excluir Aluno">
@@ -79,11 +79,10 @@
                             </form>
                         </div>
                     </td>
-                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="{{ in_array(auth()->user()->role, ['owner', 'admin']) ? 6 : 5 }}" class="px-6 py-8 text-center text-sm text-slate-400">
+                    <td colspan="6" class="px-6 py-8 text-center text-sm text-slate-400">
                         Nenhum aluno cadastrado.
                     </td>
                 </tr>
