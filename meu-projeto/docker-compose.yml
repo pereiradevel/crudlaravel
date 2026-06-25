@@ -5,17 +5,35 @@ services:
       dockerfile: Dockerfile
     container_name: laravel_app
     restart: unless-stopped
-    stdin_open: true # <--- ADICIONE ESTA LINHA
-    tty: true        # <--- ADICIONE ESTA LINHA
+    working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
     ports:
       - "8000:8000"
       - "5173:5173"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel_user
+      - DB_PASSWORD=laravel_password
     networks:
       - laravel_network
+    command: >
+      bash -c "
+        composer install &&
+        npm install &&
+        cp -n .env.example .env || true &&
+        php artisan key:generate --force &&
+        php artisan migrate --force &&
+        composer dev
+      "
 
   db:
     image: mysql:8.0
@@ -25,13 +43,19 @@ services:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel_user
       MYSQL_PASSWORD: laravel_password
-      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - laravel_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   mysql_data:
