@@ -1,36 +1,22 @@
 {
-  "name": "Laravel & MySQL Dev Container",
-  "dockerComposeFile": "../docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/var/www/html",
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "php.suggest.basic": false,
-        "editor.formatOnSave": true
-      },
-      "extensions": [
-        "onecentlin.laravel-blade",
-        "amiralizadeh9480.laravel-extra-intellisense",
-        "shufo.vscode-blade-formatter",
-        "bmewburn.vscode-intelephense-client"
-      ]
+    "name": "SAE Laravel",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/var/www/html",
+    "forwardPorts": [8000, 5173, 8081],
+    "portsAttributes": {
+        "8000": {
+            "label": "Laravel",
+            "onAutoForward": "openPreview",
+            "protocol": "http"
+        },
+        "5173": {
+            "label": "Vite",
+            "protocol": "http"
+        },
+        "8081": {
+            "label": "phpMyAdmin",
+            "protocol": "http"
+        }
     }
-  },
-  "forwardPorts": [8000, 5173, 3306],
-  "portsAttributes": {
-    "8000": {
-      "label": "Laravel Dev Server",
-      "onAutoForward": "openPreview"
-    },
-    "5173": {
-      "label": "Vite HMR Server",
-      "onAutoForward": "ignore"
-    },
-    "3306": {
-      "label": "MySQL Database",
-      "onAutoForward": "ignore"
-    }
-  },
-  "postCreateCommand": "composer install && npm install && cp -n .env.example .env && php artisan key:generate && php artisan migrate --force"
 }
